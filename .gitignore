@@ -4,15 +4,9 @@ build/
 !**/src/main/**/build/
 !**/src/test/**/build/
 .kotlin
-nexus-upload-doc.html
-nexus-upload-doc.txt
-extract_doc.py
+.idea/
 
 ### IntelliJ IDEA ###
-.idea/modules.xml
-.idea/jarRepositories.xml
-.idea/compiler.xml
-.idea/libraries/
 *.iws
 *.iml
 *.ipr
