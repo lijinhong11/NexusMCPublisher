@@ -1,0 +1,136 @@
+# NexusMCPublisher
+
+一个兼容 **JDK 8** 的 Gradle 插件，按照 NexusMC 个人 API 的两段式流程发布资源版本：
+
+1. `POST /api/upload` 上传构建产物；
+2. `POST /api/resources/{id}/versions` 使用上传响应中的 URL、原始文件名、大小及校验值发布版本。
+
+插件 ID：`io.github.lijinhong11.nexusmc-publisher`
+
+## 使用
+
+```kotlin
+plugins {
+    java
+    id("io.github.lijinhong11.nexusmc-publisher") version "1.0.0"
+}
+
+version = "1.2.3"
+
+nexusMCPublisher {
+    resourceId.set("你的资源 ID")
+    versionTag.set(VersionTag.RELEASE)
+    versionTitle.set("兼容新版游戏")
+    changelog.set("修复若干问题并更新资源文件。")
+    mcVersions.set(listOf("1.21.4"))
+
+    // 应用 java 插件时默认使用 jar 任务的输出，无需设置 artifact。
+    // 需要发布其他文件时：
+    // artifact("build/libs/example.jar")
+}
+```
+
+## 多文件发布
+
+每个 `file` 会先独立上传，随后一次性写入版本接口的 `files[]`。必须且只能有一个文件设置为主文件：
+
+```kotlin
+import io.github.lijinhong11.nexusmcpublisher.VersionTag
+
+nexusMCPublisher {
+    resourceId.set("你的资源 ID")
+    versionTag.set(VersionTag.RELEASE)
+    mcVersions.set(listOf("1.21.1", "1.21.4"))
+
+    file {
+        artifact("build/libs/plugin-paper.jar")
+        primary.set(true)
+        gameVersions.set(listOf("1.21.4"))
+        loaders.set(listOf("paper"))
+    }
+
+    file {
+        artifact("build/libs/plugin-fabric.jar")
+        primary.set(false) // 默认就是 false
+        gameVersions.set(listOf("1.21.1", "1.21.4"))
+        loaders.set(listOf("fabric"))
+    }
+}
+```
+
+兼容原有单文件配置：如果没有声明任何 `file {}`，插件继续使用顶层 `artifact`；应用 Java 插件时仍默认使用 `jar` 输出，并自动将它作为唯一主文件。
+
+Token 不应写入构建脚本。请通过环境变量提供：
+
+```bash
+export NEXUSMC_API_TOKEN='avm_pa...'
+./gradlew publishToNexusMC
+```
+
+也可以在用户级 `~/.gradle/gradle.properties` 中设置（不要提交到仓库）：
+
+```properties
+nexusMCToken=avm_pa...
+```
+
+Token 需要以下权限：
+
+- `upload:file`
+- `resource:update:self`
+
+## 配置项
+
+| 配置 | 必填 | 默认值 | 说明 |
+|---|---:|---|---|
+| `resourceId` | 是 | — | NexusMC 资源 ID |
+| `token` | 是 | 环境变量或 Gradle 属性 | 个人 API Token |
+| `version` | 是 | `project.version` | 新版本号 |
+| `versionTag` | 否 | `VersionTag.RELEASE` | `RELEASE`、`BETA` 或 `ALPHA` |
+| `versionTitle` | 否 | `Version <version>` | 版本标题 |
+| `changelog` | 否 | — | 更新日志 |
+| `mcVersions` | 否 | 空列表 | Minecraft 版本列表 |
+| `downloadType` | 否 | `local` | 下载类型 |
+| `artifact` | 是 | Java `jar` 输出 | 要上传的文件 |
+| `file {}` | 否 | — | 多文件配置，可重复声明；启用后忽略顶层 `artifact` |
+| `baseUrl` | 否 | `https://www.nexusmc.cn` | API 基础地址，主要用于测试或私有部署 |
+
+## 构建与测试
+
+项目本身使用 JDK 8：
+
+```bash
+./gradlew clean test build
+```
+
+HTTP 测试使用本地测试服务器，不会向 NexusMC 真实站点上传文件。
+
+## 发布到 Gradle Plugin Portal
+
+1. 在 [Gradle Plugin Portal](https://plugins.gradle.org/) 注册账号并创建 API Key。
+2. 不要把凭据写入项目文件。推荐设置环境变量：
+
+   ```bash
+   export GRADLE_PUBLISH_KEY='你的 Portal Key'
+   export GRADLE_PUBLISH_SECRET='你的 Portal Secret'
+   ```
+
+   也可以写入用户级 `~/.gradle/gradle.properties`：
+
+   ```properties
+   gradle.publish.key=你的 Portal Key
+   gradle.publish.secret=你的 Portal Secret
+   ```
+
+3. 先执行本地校验，不会上传：
+
+   ```bash
+   ./gradlew clean test validatePlugins build -PpluginVersion=1.0.0
+   ```
+
+4. 确认版本号不是 `SNAPSHOT`，然后发布：
+
+   ```bash
+   ./gradlew publishPlugins -PpluginVersion=1.0.0
+   ```
+
+首次发布需要等待 Plugin Portal 人工审核。后续版本仍应使用新的、未发布过的版本号。
