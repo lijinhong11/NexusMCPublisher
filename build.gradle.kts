@@ -4,7 +4,7 @@ plugins {
 }
 
 group = "io.github.lijinhong11"
-version = providers.gradleProperty("pluginVersion").getOrElse("1.0.0-SNAPSHOT")
+version = property("version")!! as String
 
 repositories {
     mavenCentral()
@@ -29,7 +29,7 @@ gradlePlugin {
 
     plugins {
         create("nexusMCPublisher") {
-            id = "io.github.lijinhong11.nexusmc-publisher"
+            id = "io.github.lijinhong11.nexusmcpublisher"
             implementationClass = "io.github.lijinhong11.nexusmcpublisher.NexusMCPublisherPlugin"
             displayName = "NexusMC Publisher"
             description = "Uploads and publishes resources to NexusMC"

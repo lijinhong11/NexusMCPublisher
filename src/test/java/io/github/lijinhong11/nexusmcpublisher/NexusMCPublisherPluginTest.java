@@ -5,11 +5,9 @@ import org.gradle.api.Task;
 import org.gradle.testfixtures.ProjectBuilder;
 import org.junit.jupiter.api.Test;
 
-import java.util.Arrays;
+import java.util.Collections;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 class NexusMCPublisherPluginTest {
     @Test
@@ -20,7 +18,7 @@ class NexusMCPublisherPluginTest {
 
         assertNotNull(project.getExtensions().findByType(NexusMCPublisherExtension.class));
         Task task = project.getTasks().getByName("publishToNexusMC");
-        assertTrue(task instanceof PublishToNexusMCTask);
+        assertInstanceOf(PublishToNexusMCTask.class, task);
     }
 
     @Test
@@ -32,12 +30,12 @@ class NexusMCPublisherPluginTest {
         extension.file(file -> {
             file.artifact("build/paper.jar");
             file.getPrimary().set(true);
-            file.getGameVersions().set(Arrays.asList("1.21.4"));
-            file.getLoaders().set(Arrays.asList("paper"));
+            file.getGameVersions().set(Collections.singletonList("1.21.4"));
+            file.getLoaders().set(Collections.singletonList("paper"));
         });
         extension.file(file -> {
             file.artifact("build/fabric.jar");
-            file.getLoaders().set(Arrays.asList("fabric"));
+            file.getLoaders().set(Collections.singletonList("fabric"));
         });
 
         assertEquals(2, extension.getFiles().size());
