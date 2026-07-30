@@ -1,3 +1,5 @@
+import org.gradle.plugin.compatibility.compatibility
+
 plugins {
     `java-gradle-plugin`
     id("com.gradle.plugin-publish") version "2.1.1"
@@ -34,6 +36,12 @@ gradlePlugin {
             displayName = "NexusMC Publisher"
             description = "Uploads and publishes resources to NexusMC"
             tags.set(listOf("nexusmc", "publishing", "minecraft", "automation"))
+
+            compatibility {
+                features {
+                    configurationCache = false
+                }
+            }
         }
     }
 }
