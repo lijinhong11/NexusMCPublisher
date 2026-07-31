@@ -26,6 +26,7 @@ public abstract class PublishToNexusMCTask extends DefaultTask {
     @Input @Optional public abstract Property<String> getChangelog();
     @Input public abstract Property<String> getDownloadType();
     @Input public abstract ListProperty<String> getMcVersions();
+    @Input public abstract ListProperty<String> getSubcategoryIds();
     @Internal public abstract RegularFileProperty getArtifact();
     @InputFiles public abstract ConfigurableFileCollection getArtifacts();
 
@@ -53,7 +54,7 @@ public abstract class PublishToNexusMCTask extends DefaultTask {
             java.nio.file.Path artifact = getArtifact().get().getAsFile().toPath();
             getLogger().lifecycle("Uploading {} to NexusMC", artifact.getFileName());
             uploadedFiles.add(new NexusMCApiClient.VersionFile(
-                client.upload(artifact), true, getMcVersions().get(), java.util.Collections.emptyList()
+                client.upload(artifact), true, getMcVersions().get(), getSubcategoryIds().get()
             ));
         } else {
             validateFiles(configuredFiles);
@@ -62,7 +63,7 @@ public abstract class PublishToNexusMCTask extends DefaultTask {
                 getLogger().lifecycle("Uploading {} to NexusMC", artifact.getFileName());
                 uploadedFiles.add(new NexusMCApiClient.VersionFile(
                     client.upload(artifact), file.getPrimary().get(),
-                    file.getGameVersions().get(), file.getLoaders().get()
+                    file.getGameVersions().get(), subcategoryIds(file)
                 ));
             }
         }
@@ -72,13 +73,36 @@ public abstract class PublishToNexusMCTask extends DefaultTask {
             optional(getChangelog()), getDownloadType().get(), uploadedFiles, getMcVersions().get()
         );
         JsonNode response = client.publishVersion(getResourceId().get(), request);
+        getLogger().lifecycle(submissionMessage(getVersion().get(), response));
+    }
+
+    static String submissionMessage(String version, JsonNode response) {
         JsonNode id = response.get("id");
-        getLogger().lifecycle("Published NexusMC version {}{}", getVersion().get(),
-            id == null ? "" : " (id: " + id.asText() + ")");
+        JsonNode status = response.get("status");
+        return "Submitted NexusMC version " + version
+            + submissionDetails(id, status)
+            + ". It may not be visible until NexusMC approves it.";
+    }
+
+    private static String submissionDetails(JsonNode id, JsonNode status) {
+        if (id == null && status == null) {
+            return "";
+        }
+        if (id == null) {
+            return " (status: " + status.asText() + ")";
+        }
+        return " (id: " + id.asText()
+            + (status == null ? "" : ", status: " + status.asText())
+            + ")";
     }
 
     private static String optional(Property<String> property) {
         return property.isPresent() ? property.get() : null;
+    }
+
+    static java.util.List<String> subcategoryIds(NexusMCFileSpec file) {
+        java.util.List<String> subcategoryIds = file.getSubcategoryIds().get();
+        return subcategoryIds.isEmpty() ? file.getLoaders().get() : subcategoryIds;
     }
 
     private static void validateRequired(String name, Property<String> property) {

@@ -27,6 +27,7 @@ nexusMCPublisher {
     versionTitle.set("Minecraft compatibility update")
     changelog.set("Fixes several issues and updates the resource artifact.")
     mcVersions.set(listOf("1.21.4"))
+    subcategoryIds.set(listOf("paper"))
 
     // Java プラグインが適用されている場合、jar タスクの出力がデフォルトで使用されます。
     // 別の成果物を公開する場合：
@@ -50,14 +51,14 @@ nexusMCPublisher {
         artifact("build/libs/plugin-paper.jar")
         primary.set(true)
         gameVersions.set(listOf("1.21.4"))
-        loaders.set(listOf("paper"))
+        subcategoryIds.set(listOf("paper"))
     }
 
     file {
         artifact("build/libs/plugin-fabric.jar")
         // primary のデフォルト値は false です
         gameVersions.set(listOf("1.21.1", "1.21.4"))
-        loaders.set(listOf("fabric"))
+        subcategoryIds.set(listOf("fabric"))
     }
 }
 ```
@@ -95,6 +96,7 @@ nexusMCToken=avm_pa...
 | `versionTitle` | いいえ | `Version <version>` | バージョンタイトル |
 | `changelog` | いいえ | — | 変更履歴 |
 | `mcVersions` | いいえ | 空のリスト | 対応する Minecraft バージョン |
+| `subcategoryIds` | いいえ | 空のリスト | 単一ファイル公開時の Loader/サブカテゴリ ID |
 | `downloadType` | いいえ | `local` | NexusMC のダウンロード形式 |
 | `artifact` | はい | Java の `jar` 出力 | 単一ファイル公開時の成果物 |
 | `file {}` | いいえ | — | 複数回指定可能なファイル設定。トップレベルの `artifact` より優先されます |

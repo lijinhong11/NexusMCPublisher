@@ -14,6 +14,7 @@ public class NexusMCFileSpec {
     private final RegularFileProperty artifact;
     private final Property<Boolean> primary;
     private final ListProperty<String> gameVersions;
+    private final ListProperty<String> subcategoryIds;
     private final ListProperty<String> loaders;
 
     @Inject
@@ -22,15 +23,18 @@ public class NexusMCFileSpec {
         this.artifact = objects.fileProperty();
         this.primary = objects.property(Boolean.class);
         this.gameVersions = objects.listProperty(String.class);
+        this.subcategoryIds = objects.listProperty(String.class);
         this.loaders = objects.listProperty(String.class);
         primary.convention(false);
         gameVersions.convention(Collections.emptyList());
+        subcategoryIds.convention(Collections.emptyList());
         loaders.convention(Collections.emptyList());
     }
 
     public RegularFileProperty getArtifact() { return artifact; }
     public Property<Boolean> getPrimary() { return primary; }
     public ListProperty<String> getGameVersions() { return gameVersions; }
+    public ListProperty<String> getSubcategoryIds() { return subcategoryIds; }
     public ListProperty<String> getLoaders() { return loaders; }
 
     public void artifact(Object path) {

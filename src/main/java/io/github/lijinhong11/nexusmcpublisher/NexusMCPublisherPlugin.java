@@ -32,6 +32,7 @@ public class NexusMCPublisherPlugin implements Plugin<Project> {
                 task.getChangelog().convention(extension.getChangelog());
                 task.getDownloadType().convention(extension.getDownloadType());
                 task.getMcVersions().convention(extension.getMcVersions());
+                task.getSubcategoryIds().convention(extension.getSubcategoryIds());
                 task.getArtifact().convention(extension.getArtifact());
                 task.setPublisherExtension(extension);
                 task.getArtifacts().from(project.provider(() -> {

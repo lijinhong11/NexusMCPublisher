@@ -27,6 +27,7 @@ nexusMCPublisher {
     versionTitle.set("Minecraft compatibility update")
     changelog.set("Fixes several issues and updates the resource artifact.")
     mcVersions.set(listOf("1.21.4"))
+    subcategoryIds.set(listOf("paper"))
 
     // When the Java plugin is applied, the jar task output is used by default.
     // To publish a different artifact:
@@ -50,14 +51,14 @@ nexusMCPublisher {
         artifact("build/libs/plugin-paper.jar")
         primary.set(true)
         gameVersions.set(listOf("1.21.4"))
-        loaders.set(listOf("paper"))
+        subcategoryIds.set(listOf("paper"))
     }
 
     file {
         artifact("build/libs/plugin-fabric.jar")
         // primary defaults to false
         gameVersions.set(listOf("1.21.1", "1.21.4"))
-        loaders.set(listOf("fabric"))
+        subcategoryIds.set(listOf("fabric"))
     }
 }
 ```
@@ -95,9 +96,10 @@ The token requires these permissions:
 | `versionTitle` | No | `Version <version>` | Version title |
 | `changelog` | No | — | Version changelog |
 | `mcVersions` | No | Empty list | Minecraft versions for the release |
+| `subcategoryIds` | No | Empty list | Loader/subcategory IDs for single-file publishing |
 | `downloadType` | No | `local` | NexusMC download type |
 | `artifact` | Yes | Java `jar` output | Single artifact to upload |
-| `file {}` | No | — | Repeatable multi-file declaration; overrides top-level `artifact` |
+| `file {}` | No | — | Repeatable multi-file declaration; supports `artifact`, `primary`, `gameVersions`, and `subcategoryIds` |
 | `baseUrl` | No | `https://www.nexusmc.cn` | API base URL, mainly useful for testing or private deployments |
 
 ## Building and testing

@@ -99,7 +99,7 @@ public final class NexusMCApiClient {
             putIfPresent(uploaded, "sha256", file.uploadedFile.sha256);
             putIfPresent(uploaded, "sha1", file.uploadedFile.sha1);
             putStringArray(uploaded, "gameVersions", file.gameVersions);
-            putStringArray(uploaded, "loaders", file.loaders);
+            putStringArray(uploaded, "subcategoryIds", file.subcategoryIds);
         }
 
         ArrayNode versions = body.putArray("mcVersions");
@@ -258,17 +258,17 @@ public final class NexusMCApiClient {
         private final UploadedFile uploadedFile;
         private final boolean primary;
         private final List<String> gameVersions;
-        private final List<String> loaders;
+        private final List<String> subcategoryIds;
 
         public VersionFile(UploadedFile uploadedFile, boolean primary,
-                           List<String> gameVersions, List<String> loaders) {
+                           List<String> gameVersions, List<String> subcategoryIds) {
             if (uploadedFile == null) {
                 throw new IllegalArgumentException("uploadedFile must not be null");
             }
             this.uploadedFile = uploadedFile;
             this.primary = primary;
             this.gameVersions = gameVersions == null ? Collections.emptyList() : gameVersions;
-            this.loaders = loaders == null ? Collections.emptyList() : loaders;
+            this.subcategoryIds = subcategoryIds == null ? Collections.emptyList() : subcategoryIds;
         }
     }
 }

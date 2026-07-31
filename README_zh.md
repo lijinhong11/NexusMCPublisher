@@ -27,6 +27,7 @@ nexusMCPublisher {
     versionTitle.set("兼容新版游戏")
     changelog.set("修复若干问题并更新资源文件。")
     mcVersions.set(listOf("1.21.4"))
+    subcategoryIds.set(listOf("paper"))
 
     // 应用 Java 插件时，默认使用 jar 任务的输出。
     // 如需发布其他文件：
@@ -50,14 +51,14 @@ nexusMCPublisher {
         artifact("build/libs/plugin-paper.jar")
         primary.set(true)
         gameVersions.set(listOf("1.21.4"))
-        loaders.set(listOf("paper"))
+        subcategoryIds.set(listOf("paper"))
     }
 
     file {
         artifact("build/libs/plugin-fabric.jar")
         // primary 默认为 false
         gameVersions.set(listOf("1.21.1", "1.21.4"))
-        loaders.set(listOf("fabric"))
+        subcategoryIds.set(listOf("fabric"))
     }
 }
 ```
@@ -95,9 +96,10 @@ Token 需要以下权限：
 | `versionTitle` | 否 | `Version <version>` | 版本标题 |
 | `changelog` | 否 | — | 更新日志 |
 | `mcVersions` | 否 | 空列表 | 版本支持的 Minecraft 版本 |
+| `subcategoryIds` | 否 | 空列表 | 单文件发布时的 Loader/子分类 ID |
 | `downloadType` | 否 | `local` | NexusMC 下载类型 |
 | `artifact` | 是 | Java `jar` 输出 | 单文件发布时上传的文件 |
-| `file {}` | 否 | — | 可重复声明的多文件配置；启用后忽略顶层 `artifact` |
+| `file {}` | 否 | — | 可重复声明的多文件配置，支持 `artifact`、`primary`、`gameVersions` 和 `subcategoryIds` |
 | `baseUrl` | 否 | `https://www.nexusmc.cn` | API 基础地址，主要用于测试或私有部署 |
 
 ## 构建与测试

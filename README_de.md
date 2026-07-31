@@ -27,6 +27,7 @@ nexusMCPublisher {
     versionTitle.set("Minecraft compatibility update")
     changelog.set("Fixes several issues and updates the resource artifact.")
     mcVersions.set(listOf("1.21.4"))
+    subcategoryIds.set(listOf("paper"))
 
     // Wenn das Java-Plugin angewendet wird, wird standardmäßig die Ausgabe der jar-Task verwendet.
     // So kann ein anderes Artefakt veröffentlicht werden:
@@ -50,14 +51,14 @@ nexusMCPublisher {
         artifact("build/libs/plugin-paper.jar")
         primary.set(true)
         gameVersions.set(listOf("1.21.4"))
-        loaders.set(listOf("paper"))
+        subcategoryIds.set(listOf("paper"))
     }
 
     file {
         artifact("build/libs/plugin-fabric.jar")
         // primary ist standardmäßig false
         gameVersions.set(listOf("1.21.1", "1.21.4"))
-        loaders.set(listOf("fabric"))
+        subcategoryIds.set(listOf("fabric"))
     }
 }
 ```
@@ -95,6 +96,7 @@ Das Token benötigt folgende Berechtigungen:
 | `versionTitle` | Nein | `Version <version>` | Titel der Version |
 | `changelog` | Nein | — | Änderungsprotokoll der Version |
 | `mcVersions` | Nein | Leere Liste | Minecraft-Versionen der Veröffentlichung |
+| `subcategoryIds` | Nein | Leere Liste | Loader-/Unterkategorie-IDs für die Einzeldatei-Veröffentlichung |
 | `downloadType` | Nein | `local` | NexusMC-Downloadtyp |
 | `artifact` | Ja | Ausgabe der Java-`jar`-Task | Einzelnes hochzuladendes Artefakt |
 | `file {}` | Nein | — | Wiederholbare Mehrdatei-Deklaration; überschreibt `artifact` |

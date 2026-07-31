@@ -23,6 +23,7 @@ public class NexusMCPublisherExtension {
     private final Property<String> changelog;
     private final Property<String> downloadType;
     private final ListProperty<String> mcVersions;
+    private final ListProperty<String> subcategoryIds;
     private final RegularFileProperty artifact;
     private final ObjectFactory objects;
     private final List<NexusMCFileSpec> files = new ArrayList<>();
@@ -40,12 +41,14 @@ public class NexusMCPublisherExtension {
         this.changelog = objects.property(String.class);
         this.downloadType = objects.property(String.class);
         this.mcVersions = objects.listProperty(String.class);
+        this.subcategoryIds = objects.listProperty(String.class);
         this.artifact = objects.fileProperty();
 
         baseUrl.convention("https://www.nexusmc.cn");
         versionTag.convention(VersionTag.RELEASE);
         downloadType.convention("local");
         mcVersions.convention(Collections.emptyList());
+        subcategoryIds.convention(Collections.emptyList());
     }
 
     public Property<String> getBaseUrl() { return baseUrl; }
@@ -57,6 +60,7 @@ public class NexusMCPublisherExtension {
     public Property<String> getChangelog() { return changelog; }
     public Property<String> getDownloadType() { return downloadType; }
     public ListProperty<String> getMcVersions() { return mcVersions; }
+    public ListProperty<String> getSubcategoryIds() { return subcategoryIds; }
     public RegularFileProperty getArtifact() { return artifact; }
     public List<NexusMCFileSpec> getFiles() { return Collections.unmodifiableList(files); }
 

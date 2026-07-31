@@ -84,7 +84,8 @@ class NexusMCApiClientTest {
         assertEquals("abc", body.get().get("files").get(0).get("sha256").asText());
         assertTrue(body.get().get("files").get(0).get("isPrimary").asBoolean());
         assertEquals("1.21.4", body.get().get("files").get(0).get("gameVersions").get(0).asText());
-        assertEquals("paper", body.get().get("files").get(0).get("loaders").get(0).asText());
+        assertEquals("paper", body.get().get("files").get(0).get("subcategoryIds").get(0).asText());
+        assertNull(body.get().get("files").get(0).get("loaders"));
         assertEquals("1.21.4", body.get().get("mcVersions").get(0).asText());
     }
 
@@ -117,7 +118,8 @@ class NexusMCApiClientTest {
         assertTrue(body.get().get("files").get(0).get("isPrimary").asBoolean());
         assertEquals("fabric.jar", body.get().get("files").get(1).get("fileName").asText());
         assertFalse(body.get().get("files").get(1).get("isPrimary").asBoolean());
-        assertEquals("fabric", body.get().get("files").get(1).get("loaders").get(0).asText());
+        assertEquals("fabric", body.get().get("files").get(1).get("subcategoryIds").get(0).asText());
+        assertNull(body.get().get("files").get(1).get("loaders"));
         assertEquals(2, body.get().get("files").get(1).get("gameVersions").size());
     }
 
