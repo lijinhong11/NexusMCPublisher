@@ -9,47 +9,47 @@ public class NexusMCPublisherPlugin implements Plugin<Project> {
     @Override
     public void apply(Project project) {
         NexusMCPublisherExtension extension = project.getExtensions().create(
-            "nexusMCPublisher", NexusMCPublisherExtension.class, project
+                "nexusMCPublisher", NexusMCPublisherExtension.class, project
         );
 
         extension.getToken().convention(
-            project.getProviders().environmentVariable("NEXUSMC_API_TOKEN")
-                .orElse(project.getProviders().gradleProperty("nexusMCToken"))
+                project.getProviders().environmentVariable("NEXUSMC_API_TOKEN")
+                        .orElse(project.getProviders().gradleProperty("nexusMCToken"))
         );
         extension.getVersion().convention(project.provider(() -> String.valueOf(project.getVersion())));
         extension.getVersionTitle().convention(extension.getVersion().map(value -> "Version " + value));
 
         TaskProvider<PublishToNexusMCTask> publish = project.getTasks().register(
-            "publishToNexusMC", PublishToNexusMCTask.class, task -> {
-                task.setGroup("publishing");
-                task.setDescription("Uploads an artifact and publishes a new NexusMC resource version.");
-                task.getBaseUrl().convention(extension.getBaseUrl());
-                task.getToken().convention(extension.getToken());
-                task.getResourceId().convention(extension.getResourceId());
-                task.getVersion().convention(extension.getVersion());
-                task.getVersionTag().convention(extension.getVersionTag());
-                task.getVersionTitle().convention(extension.getVersionTitle());
-                task.getChangelog().convention(extension.getChangelog());
-                task.getDownloadType().convention(extension.getDownloadType());
-                task.getMcVersions().convention(extension.getMcVersions());
-                task.getSubcategoryIds().convention(extension.getSubcategoryIds());
-                task.getArtifact().convention(extension.getArtifact());
-                task.setPublisherExtension(extension);
-                task.getArtifacts().from(project.provider(() -> {
-                    if (extension.getFiles().isEmpty()) {
-                        return extension.getArtifact().isPresent()
-                            ? java.util.Collections.singletonList(extension.getArtifact().get().getAsFile())
-                            : java.util.Collections.emptyList();
-                    }
-                    java.util.List<java.io.File> files = new java.util.ArrayList<>();
-                    for (NexusMCFileSpec file : extension.getFiles()) {
-                        if (file.getArtifact().isPresent()) {
-                            files.add(file.getArtifact().get().getAsFile());
+                "publishToNexusMC", PublishToNexusMCTask.class, task -> {
+                    task.setGroup("publishing");
+                    task.setDescription("Uploads an artifact and publishes a new NexusMC resource version.");
+                    task.getBaseUrl().convention(extension.getBaseUrl());
+                    task.getToken().convention(extension.getToken());
+                    task.getResourceId().convention(extension.getResourceId());
+                    task.getVersion().convention(extension.getVersion());
+                    task.getVersionTag().convention(extension.getVersionTag());
+                    task.getVersionTitle().convention(extension.getVersionTitle());
+                    task.getChangelog().convention(extension.getChangelog());
+                    task.getDownloadType().convention(extension.getDownloadType());
+                    task.getMcVersions().convention(extension.getMcVersions());
+                    task.getSubcategoryIds().convention(extension.getSubcategoryIds());
+                    task.getArtifact().convention(extension.getArtifact());
+                    task.setPublisherExtension(extension);
+                    task.getArtifacts().from(project.provider(() -> {
+                        if (extension.getFiles().isEmpty()) {
+                            return extension.getArtifact().isPresent()
+                                    ? java.util.Collections.singletonList(extension.getArtifact().get().getAsFile())
+                                    : java.util.Collections.emptyList();
                         }
-                    }
-                    return files;
-                }));
-            }
+                        java.util.List<java.io.File> files = new java.util.ArrayList<>();
+                        for (NexusMCFileSpec file : extension.getFiles()) {
+                            if (file.getArtifact().isPresent()) {
+                                files.add(file.getArtifact().get().getAsFile());
+                            }
+                        }
+                        return files;
+                    }));
+                }
         );
 
         project.getPluginManager().withPlugin("java", ignored -> {

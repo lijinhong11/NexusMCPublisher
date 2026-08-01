@@ -7,7 +7,7 @@ NexusMC Personal API の2段階アップロードフローを使用してリソ�
 1. `POST /api/upload` で各成果物をアップロードします。
 2. アップロードAPIから返された URL、元のファイル名、サイズ、チェックサムを使用し、`POST /api/resources/{id}/versions` でバージョンを公開します。
 
-プラグインID：`io.github.lijinhong11.nexusmc-publisher`
+プラグインID：`io.github.lijinhong11.nexusmcpublisher`
 
 ## 使用方法
 
@@ -111,34 +111,3 @@ nexusMCToken=avm_pa...
 ```
 
 HTTP テストではローカルテストサーバーを使用し、実際の NexusMC サービスへファイルをアップロードしません。
-
-## Gradle Plugin Portal への公開
-
-1. [Gradle Plugin Portal](https://plugins.gradle.org/) に登録し、APIキーを作成します。
-2. 認証情報はリポジトリ外で管理してください。環境変数の使用を推奨します。
-
-   ```bash
-   export GRADLE_PUBLISH_KEY='your-portal-key'
-   export GRADLE_PUBLISH_SECRET='your-portal-secret'
-   ```
-
-   または、ユーザー単位の `~/.gradle/gradle.properties` を使用できます。
-
-   ```properties
-   gradle.publish.key=your-portal-key
-   gradle.publish.secret=your-portal-secret
-   ```
-
-3. アップロードせずにローカルでリリースを検証します。
-
-   ```bash
-   ./gradlew clean test validatePlugins build
-   ```
-
-4. SNAPSHOT ではないプロジェクトバージョンを設定して公開します。
-
-   ```bash
-   ./gradlew publishPlugins
-   ```
-
-初回リリースは Gradle Plugin Portal による手動審査の対象です。それ以降も、公開済みではない新しいバージョン番号を使用する必要があります。

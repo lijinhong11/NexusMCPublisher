@@ -29,6 +29,68 @@ public final class NexusMCApiClient {
         this.json = json;
     }
 
+    private static byte[] readAll(InputStream input) throws IOException {
+        ByteArrayOutputStream output = new ByteArrayOutputStream();
+        byte[] buffer = new byte[8192];
+        int count;
+        while ((count = input.read(buffer)) != -1) {
+            output.write(buffer, 0, count);
+        }
+        return output.toByteArray();
+    }
+
+    private static void writeAscii(OutputStream output, String value) throws IOException {
+        output.write(value.getBytes(StandardCharsets.ISO_8859_1));
+    }
+
+    private static JsonNode requiredField(JsonNode node, String name) {
+        JsonNode field = node.get(name);
+        if (field == null || field.isNull()) {
+            throw new NexusMCApiException("NexusMC response is missing field '" + name + "'", null);
+        }
+        return field;
+    }
+
+    private static String optionalText(JsonNode node, String name) {
+        JsonNode field = node.get(name);
+        return field == null || field.isNull() ? null : field.asText();
+    }
+
+    private static void putIfPresent(ObjectNode node, String name, String value) {
+        if (value != null && !value.trim().isEmpty()) {
+            node.put(name, value);
+        }
+    }
+
+    private static void putStringArray(ObjectNode node, String name, List<String> values) {
+        if (values == null || values.isEmpty()) {
+            return;
+        }
+        ArrayNode array = node.putArray(name);
+        for (String value : values) {
+            array.add(value);
+        }
+    }
+
+    private static String requireText(String value, String name) {
+        if (value == null || value.trim().isEmpty()) {
+            throw new IllegalArgumentException(name + " must not be blank");
+        }
+        return value;
+    }
+
+    private static String defaultIfBlank(String value) {
+        return value == null || value.trim().isEmpty() ? "local" : value;
+    }
+
+    private static String stripTrailingSlash(String value) {
+        return value.endsWith("/") ? value.substring(0, value.length() - 1) : value;
+    }
+
+    private static String escapeQuoted(String value) {
+        return value.replace("\\", "_").replace("\"", "_").replace("\r", "_").replace("\n", "_");
+    }
+
     public UploadedFile upload(Path file) {
         if (file == null || !Files.isRegularFile(file)) {
             throw new IllegalArgumentException("Artifact does not exist or is not a file: " + file);
@@ -49,11 +111,11 @@ public final class NexusMCApiClient {
 
             JsonNode response = readJsonResponse(connection);
             return new UploadedFile(
-                requiredField(response, "url").asText(),
-                requiredField(response, "filename").asText(),
-                requiredField(response, "size").asLong(),
-                optionalText(response, "sha256"),
-                optionalText(response, "sha1")
+                    requiredField(response, "url").asText(),
+                    requiredField(response, "filename").asText(),
+                    requiredField(response, "size").asLong(),
+                    optionalText(response, "sha256"),
+                    optionalText(response, "sha1")
             );
         } catch (IOException error) {
             throw new NexusMCApiException("Could not upload " + file, error);
@@ -149,68 +211,6 @@ public final class NexusMCApiClient {
         return responseBody.trim().isEmpty() ? json.createObjectNode() : json.readTree(responseBody);
     }
 
-    private static byte[] readAll(InputStream input) throws IOException {
-        ByteArrayOutputStream output = new ByteArrayOutputStream();
-        byte[] buffer = new byte[8192];
-        int count;
-        while ((count = input.read(buffer)) != -1) {
-            output.write(buffer, 0, count);
-        }
-        return output.toByteArray();
-    }
-
-    private static void writeAscii(OutputStream output, String value) throws IOException {
-        output.write(value.getBytes(StandardCharsets.ISO_8859_1));
-    }
-
-    private static JsonNode requiredField(JsonNode node, String name) {
-        JsonNode field = node.get(name);
-        if (field == null || field.isNull()) {
-            throw new NexusMCApiException("NexusMC response is missing field '" + name + "'", null);
-        }
-        return field;
-    }
-
-    private static String optionalText(JsonNode node, String name) {
-        JsonNode field = node.get(name);
-        return field == null || field.isNull() ? null : field.asText();
-    }
-
-    private static void putIfPresent(ObjectNode node, String name, String value) {
-        if (value != null && !value.trim().isEmpty()) {
-            node.put(name, value);
-        }
-    }
-
-    private static void putStringArray(ObjectNode node, String name, List<String> values) {
-        if (values == null || values.isEmpty()) {
-            return;
-        }
-        ArrayNode array = node.putArray(name);
-        for (String value : values) {
-            array.add(value);
-        }
-    }
-
-    private static String requireText(String value, String name) {
-        if (value == null || value.trim().isEmpty()) {
-            throw new IllegalArgumentException(name + " must not be blank");
-        }
-        return value;
-    }
-
-    private static String defaultIfBlank(String value) {
-        return value == null || value.trim().isEmpty() ? "local" : value;
-    }
-
-    private static String stripTrailingSlash(String value) {
-        return value.endsWith("/") ? value.substring(0, value.length() - 1) : value;
-    }
-
-    private static String escapeQuoted(String value) {
-        return value.replace("\\", "_").replace("\"", "_").replace("\r", "_").replace("\n", "_");
-    }
-
     public static final class UploadedFile {
         private final String url;
         private final String filename;
@@ -226,11 +226,25 @@ public final class NexusMCApiClient {
             this.sha1 = sha1;
         }
 
-        public String getUrl() { return url; }
-        public String getFilename() { return filename; }
-        public long getSize() { return size; }
-        public String getSha256() { return sha256; }
-        public String getSha1() { return sha1; }
+        public String getUrl() {
+            return url;
+        }
+
+        public String getFilename() {
+            return filename;
+        }
+
+        public long getSize() {
+            return size;
+        }
+
+        public String getSha256() {
+            return sha256;
+        }
+
+        public String getSha1() {
+            return sha1;
+        }
     }
 
     public static final class VersionRequest {

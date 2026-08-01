@@ -7,7 +7,7 @@
 1. 通过 `POST /api/upload` 上传每个构建产物；
 2. 调用 `POST /api/resources/{id}/versions`，使用上传接口返回的 URL、原始文件名、大小和校验值发布版本。
 
-插件 ID：`io.github.lijinhong11.nexusmc-publisher`
+插件 ID：`io.github.lijinhong11.nexusmcpublisher`
 
 ## 使用方法
 
@@ -111,34 +111,3 @@ Token 需要以下权限：
 ```
 
 HTTP 测试使用本地测试服务器，不会向 NexusMC 真实服务上传文件。
-
-## 发布到 Gradle Plugin Portal
-
-1. 在 [Gradle Plugin Portal](https://plugins.gradle.org/) 注册账号并创建 API Key。
-2. 不要把凭据写入仓库。推荐设置环境变量：
-
-   ```bash
-   export GRADLE_PUBLISH_KEY='你的 Portal Key'
-   export GRADLE_PUBLISH_SECRET='你的 Portal Secret'
-   ```
-
-   也可以写入用户级 `~/.gradle/gradle.properties`：
-
-   ```properties
-   gradle.publish.key=你的 Portal Key
-   gradle.publish.secret=你的 Portal Secret
-   ```
-
-3. 先执行本地校验，该命令不会上传：
-
-   ```bash
-   ./gradlew clean test validatePlugins build
-   ```
-
-4. 设置一个非 SNAPSHOT 的项目版本，然后发布：
-
-   ```bash
-   ./gradlew publishPlugins
-   ```
-
-首次发布需要等待 Gradle Plugin Portal 人工审核。后续每次发布也必须使用尚未发布过的新版本号。

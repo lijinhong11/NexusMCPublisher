@@ -7,7 +7,7 @@ A Java 8-compatible Gradle plugin that publishes resource versions to NexusMC us
 1. Upload each artifact with `POST /api/upload`.
 2. Publish the version with `POST /api/resources/{id}/versions`, using the URL, original filename, size, and checksums returned by the upload endpoint.
 
-Plugin ID: `io.github.lijinhong11.nexusmc-publisher`
+Plugin ID: `io.github.lijinhong11.nexusmcpublisher`
 
 ## Usage
 
@@ -112,33 +112,3 @@ The project is built with JDK 8:
 
 HTTP tests use a local test server and never upload files to the real NexusMC service.
 
-## Publishing to the Gradle Plugin Portal
-
-1. Register at the [Gradle Plugin Portal](https://plugins.gradle.org/) and create an API key.
-2. Keep the credentials outside the repository. Environment variables are recommended:
-
-   ```bash
-   export GRADLE_PUBLISH_KEY='your-portal-key'
-   export GRADLE_PUBLISH_SECRET='your-portal-secret'
-   ```
-
-   You can instead use the user-level `~/.gradle/gradle.properties` file:
-
-   ```properties
-   gradle.publish.key=your-portal-key
-   gradle.publish.secret=your-portal-secret
-   ```
-
-3. Validate the release locally without uploading:
-
-   ```bash
-   ./gradlew clean test validatePlugins build
-   ```
-
-4. Set a non-SNAPSHOT project version and publish:
-
-   ```bash
-   ./gradlew publishPlugins
-   ```
-
-The first release is subject to manual review by the Gradle Plugin Portal. Every later release must use a version that has not already been published.

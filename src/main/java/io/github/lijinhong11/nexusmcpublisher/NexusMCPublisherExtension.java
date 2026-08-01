@@ -51,18 +51,53 @@ public class NexusMCPublisherExtension {
         subcategoryIds.convention(Collections.emptyList());
     }
 
-    public Property<String> getBaseUrl() { return baseUrl; }
-    public Property<String> getToken() { return token; }
-    public Property<String> getResourceId() { return resourceId; }
-    public Property<String> getVersion() { return version; }
-    public Property<VersionTag> getVersionTag() { return versionTag; }
-    public Property<String> getVersionTitle() { return versionTitle; }
-    public Property<String> getChangelog() { return changelog; }
-    public Property<String> getDownloadType() { return downloadType; }
-    public ListProperty<String> getMcVersions() { return mcVersions; }
-    public ListProperty<String> getSubcategoryIds() { return subcategoryIds; }
-    public RegularFileProperty getArtifact() { return artifact; }
-    public List<NexusMCFileSpec> getFiles() { return Collections.unmodifiableList(files); }
+    public Property<String> getBaseUrl() {
+        return baseUrl;
+    }
+
+    public Property<String> getToken() {
+        return token;
+    }
+
+    public Property<String> getResourceId() {
+        return resourceId;
+    }
+
+    public Property<String> getVersion() {
+        return version;
+    }
+
+    public Property<VersionTag> getVersionTag() {
+        return versionTag;
+    }
+
+    public Property<String> getVersionTitle() {
+        return versionTitle;
+    }
+
+    public Property<String> getChangelog() {
+        return changelog;
+    }
+
+    public Property<String> getDownloadType() {
+        return downloadType;
+    }
+
+    public ListProperty<String> getMcVersions() {
+        return mcVersions;
+    }
+
+    public ListProperty<String> getSubcategoryIds() {
+        return subcategoryIds;
+    }
+
+    public RegularFileProperty getArtifact() {
+        return artifact;
+    }
+
+    public List<NexusMCFileSpec> getFiles() {
+        return Collections.unmodifiableList(files);
+    }
 
     public void artifact(Object path) {
         artifact.set(project.getLayout().file(project.provider(() -> project.file(path))));

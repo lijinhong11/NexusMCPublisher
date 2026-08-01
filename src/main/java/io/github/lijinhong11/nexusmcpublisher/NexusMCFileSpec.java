@@ -31,11 +31,25 @@ public class NexusMCFileSpec {
         loaders.convention(Collections.emptyList());
     }
 
-    public RegularFileProperty getArtifact() { return artifact; }
-    public Property<Boolean> getPrimary() { return primary; }
-    public ListProperty<String> getGameVersions() { return gameVersions; }
-    public ListProperty<String> getSubcategoryIds() { return subcategoryIds; }
-    public ListProperty<String> getLoaders() { return loaders; }
+    public RegularFileProperty getArtifact() {
+        return artifact;
+    }
+
+    public Property<Boolean> getPrimary() {
+        return primary;
+    }
+
+    public ListProperty<String> getGameVersions() {
+        return gameVersions;
+    }
+
+    public ListProperty<String> getSubcategoryIds() {
+        return subcategoryIds;
+    }
+
+    public ListProperty<String> getLoaders() {
+        return loaders;
+    }
 
     public void artifact(Object path) {
         artifact.set(project.getLayout().file(project.provider(() -> project.file(path))));
