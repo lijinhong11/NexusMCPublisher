@@ -1,11 +1,14 @@
 package io.github.lijinhong11.nexusmcpublisher;
 
+import io.github.lijinhong11.tiptapmarkdown.MarkdownManager;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.tasks.TaskProvider;
 import org.gradle.jvm.tasks.Jar;
 
 public class NexusMCPublisherPlugin implements Plugin<Project> {
+    public static final MarkdownManager markdownManager = new MarkdownManager();
+
     @Override
     public void apply(Project project) {
         NexusMCPublisherExtension extension = project.getExtensions().create(

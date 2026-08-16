@@ -10,6 +10,9 @@ import org.gradle.api.provider.ListProperty;
 import org.gradle.api.provider.Property;
 import org.gradle.api.tasks.*;
 
+import java.nio.file.Path;
+import java.util.List;
+
 public abstract class PublishToNexusMCTask extends DefaultTask {
     private NexusMCPublisherExtension extension;
 
@@ -36,7 +39,7 @@ public abstract class PublishToNexusMCTask extends DefaultTask {
     }
 
     private static String optional(Property<String> property) {
-        return property.isPresent() ? property.get() : null;
+        return property.isPresent() ? property.get() : "";
     }
 
     static java.util.List<String> subcategoryIds(NexusMCFileSpec file) {
@@ -122,10 +125,11 @@ public abstract class PublishToNexusMCTask extends DefaultTask {
         NexusMCApiClient client = new NexusMCApiClient(
                 getBaseUrl().get(), getToken().get(), new ObjectMapper()
         );
-        java.util.List<NexusMCFileSpec> configuredFiles = extension.getFiles();
-        java.util.List<NexusMCApiClient.VersionFile> uploadedFiles = new java.util.ArrayList<>();
+        List<NexusMCFileSpec> configuredFiles = extension.getFiles();
+        List<NexusMCApiClient.VersionFile> uploadedFiles = new java.util.ArrayList<>();
+
         if (configuredFiles.isEmpty()) {
-            java.nio.file.Path artifact = getArtifact().get().getAsFile().toPath();
+            Path artifact = getArtifact().get().getAsFile().toPath();
             getLogger().lifecycle("Uploading {} to NexusMC", artifact.getFileName());
             uploadedFiles.add(new NexusMCApiClient.VersionFile(
                     client.upload(artifact), true, getMcVersions().get(), getSubcategoryIds().get()
@@ -133,7 +137,7 @@ public abstract class PublishToNexusMCTask extends DefaultTask {
         } else {
             validateFiles(configuredFiles);
             for (NexusMCFileSpec file : configuredFiles) {
-                java.nio.file.Path artifact = file.getArtifact().get().getAsFile().toPath();
+                Path artifact = file.getArtifact().get().getAsFile().toPath();
                 getLogger().lifecycle("Uploading {} to NexusMC", artifact.getFileName());
                 uploadedFiles.add(new NexusMCApiClient.VersionFile(
                         client.upload(artifact), file.getPrimary().get(),
@@ -144,9 +148,22 @@ public abstract class PublishToNexusMCTask extends DefaultTask {
 
         NexusMCApiClient.VersionRequest request = new NexusMCApiClient.VersionRequest(
                 getVersion().get(), getVersionTag().getOrNull(), optional(getVersionTitle()),
-                optional(getChangelog()), getDownloadType().get(), uploadedFiles, getMcVersions().get()
+                getParsedChangelog(), getDownloadType().get(), uploadedFiles, getMcVersions().get()
         );
+
         JsonNode response = client.publishVersion(getResourceId().get(), request);
         getLogger().lifecycle(submissionMessage(getVersion().get(), response));
+    }
+
+    private String getParsedChangelog() {
+        if (!getChangelog().isPresent()) {
+            return "";
+        }
+
+        if (getChangelog().get().isEmpty()) {
+            return "";
+        }
+
+        return NexusMCPublisherPlugin.markdownManager.parse(getChangelog().get()).asText();
     }
 }

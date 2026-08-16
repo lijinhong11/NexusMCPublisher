@@ -13,7 +13,8 @@ repositories {
 }
 
 dependencies {
-    implementation("com.fasterxml.jackson.core:jackson-databind:2.18.4")
+    implementation("com.fasterxml.jackson.core:jackson-databind:2.22.1")
+    implementation("io.github.lijinhong11:tiptap-markdown-java:1.0.0")
 
     testImplementation("org.junit.jupiter:junit-jupiter:5.10.3")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher:1.10.3")
