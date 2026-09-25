@@ -6,6 +6,11 @@ import org.gradle.api.Project;
 import org.gradle.api.tasks.TaskProvider;
 import org.gradle.jvm.tasks.Jar;
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 public class NexusMCPublisherPlugin implements Plugin<Project> {
     public static final MarkdownManager markdownManager = new MarkdownManager();
 
@@ -41,10 +46,10 @@ public class NexusMCPublisherPlugin implements Plugin<Project> {
                     task.getArtifacts().from(project.provider(() -> {
                         if (extension.getFiles().isEmpty()) {
                             return extension.getArtifact().isPresent()
-                                    ? java.util.Collections.singletonList(extension.getArtifact().get().getAsFile())
-                                    : java.util.Collections.emptyList();
+                                    ? Collections.singletonList(extension.getArtifact().get().getAsFile())
+                                    : Collections.emptyList();
                         }
-                        java.util.List<java.io.File> files = new java.util.ArrayList<>();
+                        List<File> files = new ArrayList<>();
                         for (NexusMCFileSpec file : extension.getFiles()) {
                             if (file.getArtifact().isPresent()) {
                                 files.add(file.getArtifact().get().getAsFile());

@@ -68,7 +68,7 @@ class NexusMCApiClientTest {
             respond(exchange, 201, "{\"id\":\"version-1\"}");
         });
         NexusMCApiClient.VersionRequest request = new NexusMCApiClient.VersionRequest(
-            "1.2.3", VersionTag.RELEASE, "Version 1.2.3", "Changes", "local",
+            "1.2.3", VersionTag.RELEASE, "Version 1.2.3", JSON.readTree("{\"type\":\"doc\",\"content\":[{\"type\":\"paragraph\",\"content\":[{\"type\":\"text\",\"text\":\"Changes\"}]}]}"), "local",
             Collections.singletonList(new NexusMCApiClient.VersionFile(
                 new NexusMCApiClient.UploadedFile("/uploads/files/random.jar", "plugin.jar", 4, "abc", "def"),
                 true, Collections.singletonList("1.21.4"), Collections.singletonList("paper")
@@ -80,6 +80,7 @@ class NexusMCApiClientTest {
 
         assertEquals("1.2.3", body.get().get("version").asText());
         assertEquals("releases", body.get().get("versionTag").asText());
+        assertEquals("doc", body.get().get("changelog").get("type").asText());
         assertEquals("plugin.jar", body.get().get("files").get(0).get("fileName").asText());
         assertEquals("abc", body.get().get("files").get(0).get("sha256").asText());
         assertTrue(body.get().get("files").get(0).get("isPrimary").asBoolean());
@@ -97,7 +98,7 @@ class NexusMCApiClientTest {
             respond(exchange, 201, "{\"id\":\"version-1\"}");
         });
         NexusMCApiClient.VersionRequest request = new NexusMCApiClient.VersionRequest(
-            "2.0.0", VersionTag.BETA, "Version 2.0.0", "Changes", "local",
+            "2.0.0", VersionTag.BETA, "Version 2.0.0", JSON.readTree("{\"type\":\"doc\",\"content\":[]}"), "local",
             Arrays.asList(
                 new NexusMCApiClient.VersionFile(
                     new NexusMCApiClient.UploadedFile("/uploads/paper.jar", "paper.jar", 10, "p256", "p1"),

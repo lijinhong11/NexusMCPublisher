@@ -1,6 +1,7 @@
 package io.github.lijinhong11.nexusmcpublisher;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.JsonNode;
 import org.gradle.api.Project;
 import org.gradle.api.Task;
 import org.gradle.testfixtures.ProjectBuilder;
@@ -52,10 +53,27 @@ class NexusMCPublisherPluginTest {
     }
 
     @Test
+    void changelogIsConvertedToTiptapDocumentBeforeSubmission() throws Exception {
+        Project project = ProjectBuilder.builder().build();
+        project.getPluginManager().apply("io.github.lijinhong11.nexusmcpublisher");
+        PublishToNexusMCTask task = (PublishToNexusMCTask) project.getTasks().getByName("publishToNexusMC");
+        String changelog = "## 修复\n\n1. 修复列表格式\n2. 保留标题";
+        task.getChangelog().set(changelog);
+
+        java.lang.reflect.Method method = PublishToNexusMCTask.class.getDeclaredMethod("getParsedChangelog");
+        method.setAccessible(true);
+
+        JsonNode parsed = (JsonNode) method.invoke(task);
+        assertEquals("doc", parsed.path("type").asText());
+        assertEquals("heading", parsed.path("content").get(0).path("type").asText());
+        assertEquals("orderedList", parsed.path("content").get(1).path("type").asText());
+    }
+
+    @Test
     void registersTheExtensionAndPublishingTask() {
         Project project = ProjectBuilder.builder().build();
 
-        project.getPluginManager().apply("io.github.lijinhong11.nexusmc-publisher");
+        project.getPluginManager().apply("io.github.lijinhong11.nexusmcpublisher");
 
         assertNotNull(project.getExtensions().findByType(NexusMCPublisherExtension.class));
         Task task = project.getTasks().getByName("publishToNexusMC");
@@ -65,7 +83,7 @@ class NexusMCPublisherPluginTest {
     @Test
     void extensionCollectsMultipleFileSpecifications() {
         Project project = ProjectBuilder.builder().build();
-        project.getPluginManager().apply("io.github.lijinhong11.nexusmc-publisher");
+        project.getPluginManager().apply("io.github.lijinhong11.nexusmcpublisher");
         NexusMCPublisherExtension extension = project.getExtensions().getByType(NexusMCPublisherExtension.class);
 
         extension.file(file -> {

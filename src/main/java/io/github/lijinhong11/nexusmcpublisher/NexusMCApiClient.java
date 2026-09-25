@@ -62,6 +62,12 @@ public final class NexusMCApiClient {
         }
     }
 
+    private static void putIfPresent(ObjectNode node, String name, JsonNode value) {
+        if (value != null && !value.isNull()) {
+            node.set(name, value);
+        }
+    }
+
     private static void putStringArray(ObjectNode node, String name, List<String> values) {
         if (values == null || values.isEmpty()) {
             return;
@@ -251,12 +257,12 @@ public final class NexusMCApiClient {
         private final String version;
         private final VersionTag versionTag;
         private final String title;
-        private final String changelog;
+        private final JsonNode changelog;
         private final String downloadType;
         private final List<VersionFile> files;
         private final List<String> mcVersions;
 
-        public VersionRequest(String version, VersionTag versionTag, String title, String changelog,
+        public VersionRequest(String version, VersionTag versionTag, String title, JsonNode changelog,
                               String downloadType, List<VersionFile> files, List<String> mcVersions) {
             this.version = version;
             this.versionTag = versionTag;

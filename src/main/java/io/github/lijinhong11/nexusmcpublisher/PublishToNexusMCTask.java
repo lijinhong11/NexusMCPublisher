@@ -11,6 +11,7 @@ import org.gradle.api.provider.Property;
 import org.gradle.api.tasks.*;
 
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 
 public abstract class PublishToNexusMCTask extends DefaultTask {
@@ -42,8 +43,8 @@ public abstract class PublishToNexusMCTask extends DefaultTask {
         return property.isPresent() ? property.get() : "";
     }
 
-    static java.util.List<String> subcategoryIds(NexusMCFileSpec file) {
-        java.util.List<String> subcategoryIds = file.getSubcategoryIds().get();
+    static List<String> subcategoryIds(NexusMCFileSpec file) {
+        List<String> subcategoryIds = file.getSubcategoryIds().get();
         return subcategoryIds.isEmpty() ? file.getLoaders().get() : subcategoryIds;
     }
 
@@ -53,7 +54,7 @@ public abstract class PublishToNexusMCTask extends DefaultTask {
         }
     }
 
-    private static void validateFiles(java.util.List<NexusMCFileSpec> files) {
+    private static void validateFiles(List<NexusMCFileSpec> files) {
         int primaryFiles = 0;
         for (NexusMCFileSpec file : files) {
             if (!file.getArtifact().isPresent()) {
@@ -126,7 +127,7 @@ public abstract class PublishToNexusMCTask extends DefaultTask {
                 getBaseUrl().get(), getToken().get(), new ObjectMapper()
         );
         List<NexusMCFileSpec> configuredFiles = extension.getFiles();
-        List<NexusMCApiClient.VersionFile> uploadedFiles = new java.util.ArrayList<>();
+        List<NexusMCApiClient.VersionFile> uploadedFiles = new ArrayList<>();
 
         if (configuredFiles.isEmpty()) {
             Path artifact = getArtifact().get().getAsFile().toPath();
@@ -155,15 +156,15 @@ public abstract class PublishToNexusMCTask extends DefaultTask {
         getLogger().lifecycle(submissionMessage(getVersion().get(), response));
     }
 
-    private String getParsedChangelog() {
+    private JsonNode getParsedChangelog() {
         if (!getChangelog().isPresent()) {
-            return "";
+            return null;
         }
 
         if (getChangelog().get().isEmpty()) {
-            return "";
+            return null;
         }
 
-        return NexusMCPublisherPlugin.markdownManager.parse(getChangelog().get()).asText();
+        return NexusMCPublisherPlugin.markdownManager.parse(getChangelog().get());
     }
 }
